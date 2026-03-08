@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control Panel</title>
+  <style>
+    :root{
+      --bg:#f1f8f3;--panel:#ffffff;--panel2:#f8fffa;--line:#d9e8dd;--txt:#092417;--muted:#517164;--green:#16a34a;--green2:#22c55e;--greenSoft:#dcfce7;--amber:#d97706;--red:#dc2626;--shadow:0 20px 55px rgba(6, 50, 24, .08);
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(180deg,#f6fff8,#edf8f0);color:var(--txt)}
+    .wrap{max-width:1280px;margin:0 auto;padding:26px}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+    .headline h1{margin:0;font-size:36px;letter-spacing:-.03em}.muted{color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+    .stat,.panel{background:rgba(255,255,255,.86);backdrop-filter:blur(12px);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:26px}
+    .stat{padding:20px}.stat b{display:block;font-size:32px;margin-top:6px}
+    .grid{display:grid;grid-template-columns:390px 1fr;gap:20px}
+    .panel{padding:22px}
+    .panel h2{margin:0 0 8px;font-size:24px;letter-spacing:-.02em}
+    .label{display:block;margin:15px 0 8px;font-size:13px;color:var(--muted)}
+    .input,.select{width:100%;padding:14px 15px;border-radius:16px;border:1px solid var(--line);background:#fff;outline:none;transition:.18s ease;font-size:14px;color:var(--txt)}
+    .input:focus,.select:focus{border-color:#86efac;box-shadow:0 0 0 4px rgba(34,197,94,.14);transform:translateY(-1px)}
+    .row{display:grid;grid-template-columns:1fr 120px;gap:10px}
+    .triple{display:grid;grid-template-columns:1.1fr .7fr .7fr;gap:10px}
+    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .btn{padding:12px 15px;border:none;border-radius:15px;cursor:pointer;font-weight:700;transition:transform .18s ease,box-shadow .18s ease}
+    .btn:hover{transform:translateY(-1px)}
+    .primary{background:linear-gradient(135deg,var(--green2),var(--green));color:#fff;box-shadow:0 14px 28px rgba(34,197,94,.22)}
+    .ghost{background:#eef7f0;color:var(--txt)}.danger{background:var(--red);color:#fff}.warn{background:var(--amber);color:#fff}.success{background:var(--green);color:#fff}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .tableWrap{overflow:auto}
+    table{width:100%;border-collapse:separate;border-spacing:0 12px}
+    th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left;padding:0 12px}
+    td{background:var(--panel2);padding:16px 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);vertical-align:top}
+    td:first-child{border-left:1px solid var(--line);border-radius:18px 0 0 18px} td:last-child{border-right:1px solid var(--line);border-radius:0 18px 18px 0}
+    .pill{display:inline-flex;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}.on{background:#dcfce7;color:#166534}.off{background:#fee2e2;color:#991b1b}
+    .device{padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:8px}.device code{font-size:11px;word-break:break-all}
+    .countdown{min-width:220px}
+    .countText{font-size:24px;font-weight:800;letter-spacing:-.03em}
+    .countMeta{font-size:12px;color:var(--muted);margin-top:4px}
+    .bar{height:8px;border-radius:999px;background:#e6f3e9;overflow:hidden;margin-top:10px}
+    .fill{height:100%;background:linear-gradient(90deg,#4ade80,#16a34a);transform-origin:left center;animation:pulse 1.6s ease-in-out infinite}
+    @keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+    .successMsg{margin-top:12px;color:#166534;font-size:13px;min-height:20px}
+    .errorMsg{margin-top:10px;color:#991b1b;font-size:13px;min-height:18px}
+    .tiny{font-size:12px;color:var(--muted)}
+    @media (max-width:1080px){.grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr 1fr}}
+    @media (max-width:760px){.cards{grid-template-columns:1fr}.top,.toolbar{flex-direction:column;align-items:flex-start}.triple,.row{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}td{border-radius:18px !important;border:1px solid var(--line);margin-bottom:10px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="headline">
+        <h1>Admin control</h1>
+        <div class="muted">Create access, control devices, extend time, and manage active users.</div>
+      </div>
+      <button class="btn ghost" id="logoutBtn">Log out</button>
+    </div>
+
+    <div class="cards">
+      <div class="stat"><div class="muted">Total users</div><b id="statUsers">0</b></div>
+      <div class="stat"><div class="muted">Enabled users</div><b id="statActive">0</b></div>
+      <div class="stat"><div class="muted">Registered devices</div><b id="statDevices">0</b></div>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Create or update user</h2>
+        <div class="muted">User IDs and passwords can contain letters, numbers, symbols, and any length.</div>
+        <label class="label">User ID</label>
+        <input class="input" id="userId" placeholder="Enter any user ID" />
+        <label class="label">Password</label>
+        <input class="input" id="password" placeholder="Enter any password" />
+        <div class="triple">
+          <div>
+            <label class="label">Time amount</label>
+            <input class="input" id="durationValue" type="number" min="1" value="24" />
+          </div>
+          <div>
+            <label class="label">Unit</label>
+            <select class="select" id="durationUnit">
+              <option value="minute">Min</option>
+              <option value="hour" selected>Hour</option>
+              <option value="day">Day</option>
+              <option value="month">Month</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">Max devices</label>
+            <input class="input" id="maxDevices" type="number" min="1" value="1" />
+          </div>
+        </div>
+        <label class="label">Notes</label>
+        <input class="input" id="notes" placeholder="Optional private note" />
+        <div class="btns">
+          <button class="btn primary" id="saveBtn">Save user access</button>
+        </div>
+        <div class="successMsg" id="saveMsg"></div>
+        <div class="errorMsg" id="saveErr"></div>
+        <div class="tiny">The countdown begins only after the first successful user login.</div>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <div>
+            <h2>Managed users</h2>
+            <div class="muted">Animated live countdowns update automatically.</div>
+          </div>
+          <input class="input" id="search" placeholder="Search user ID" style="max-width:280px" />
+        </div>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr><th>User</th><th>Countdown</th><th>Devices</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="usersTbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    let users = [];
+    let countdownInterval = null;
+    const UNIT_LABELS = { minute:'Min', hour:'Hour', day:'Day', month:'Month' };
+
+    async function api(url, options = {}) {
+      const res = await fetch(url, {
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+        ...options,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || 'Request failed');
+      return data;
+    }
+
+    function fmt(ts) {
+      return ts ? new Date(ts).toLocaleString() : 'Not started';
+    }
+
+    function fmtRemaining(ms) {
+      if (ms <= 0) return 'Expired';
+      const totalSeconds = Math.floor(ms / 1000);
+      const months = Math.floor(totalSeconds / 2592000);
+      const days = Math.floor((totalSeconds % 2592000) / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      if (months > 0) return `${months}mo ${days}d ${hours}h`;
+      if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+      if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+      if (minutes > 0) return `${minutes}m ${seconds}s`;
+      return `${seconds}s`;
+    }
+
+    function durationLabel(user) {
+      const v = user.durationValue || 1;
+      const u = user.durationUnit || 'hour';
+      return `${v} ${UNIT_LABELS[u] || u}${v > 1 ? 's' : ''}`;
+    }
+
+    function updateStats() {
+      document.getElementById('statUsers').textContent = users.length;
+      document.getElementById('statActive').textContent = users.filter(u => u.enabled).length;
+      document.getElementById('statDevices').textContent = users.reduce((n, u) => n + (u.devices?.length || 0), 0);
+    }
+
+    function userRow(user) {
+      const remaining = user.expiresAt ? Math.max(0, user.expiresAt - Date.now()) : null;
+      const total = user.durationMs || 1;
+      const pct = remaining === null ? 0 : Math.max(0, Math.min(100, (remaining / total) * 100));
+      const devices = (user.devices || []).map(d => `
+        <div class="device">
+          <div><code>${d.device_id}</code></div>
+          <div class="muted">${(d.user_agent || 'Device').slice(0, 70)}</div>
+          <div class="tiny">Last seen: ${fmt(d.last_seen_at)}</div>
+          <button class="btn ghost" style="margin-top:8px" onclick="removeDevice(${user.id}, '${String(d.device_id).replace(/'/g, "\'")}')">Remove device</button>
+        </div>
+      `).join('') || '<div class="muted">No registered devices yet</div>';
+
+      return `
+        <tr>
+          <td>
+            <strong>${user.userId}</strong><br>
+            <span class="pill ${user.enabled ? 'on' : 'off'}">${user.enabled ? 'Enabled' : 'Disabled'}</span>
+            ${user.notes ? `<div class="tiny" style="margin-top:8px">${user.notes}</div>` : ''}
+          </td>
+          <td class="countdown">
+            <div class="countText">${remaining === null ? 'Starts on first login' : fmtRemaining(remaining)}</div>
+            <div class="countMeta">Allowed: ${durationLabel(user)}</div>
+            <div class="countMeta">First login: ${fmt(user.firstLoginAt)}</div>
+            <div class="countMeta">Expires: ${fmt(user.expiresAt)}</div>
+            <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+          </td>
+          <td>${devices}</td>
+          <td>
+            <div class="btns">
+              <button class="btn ${user.enabled ? 'warn' : 'success'}" onclick="toggleUser(${user.id})">${user.enabled ? 'Disable' : 'Enable'}</button>
+              <button class="btn ghost" onclick="extendUser(${user.id})">Extend</button>
+              <button class="btn danger" onclick="resetWindow(${user.id})">Reset</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderUsers() {
+      const q = document.getElementById('search').value.trim().toLowerCase();
+      const list = q ? users.filter(u => u.userId.toLowerCase().includes(q)) : users;
+      document.getElementById('usersTbody').innerHTML = list.map(userRow).join('');
+      updateStats();
+    }
+
+    async function loadUsers() {
+      const data = await api('/api/admin/users');
+      users = data.users;
+      renderUsers();
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(renderUsers, 1000);
+    }
+
+    async function toggleUser(id) { await api(`/api/admin/users/${id}/toggle`, { method:'POST' }); loadUsers(); }
+    async function resetWindow(id) { if(confirm('Reset timer and remove all devices?')) { await api(`/api/admin/users/${id}/reset-window`, { method:'POST' }); loadUsers(); } }
+    async function removeDevice(id, deviceId) { await api(`/api/admin/users/${id}/remove-device`, { method:'POST', body: JSON.stringify({ deviceId }) }); loadUsers(); }
+    async function extendUser(id) {
+      const value = prompt('How much time to add? Example: 30', '30');
+      if (!value) return;
+      const unit = prompt('Unit: minute, hour, day, month', 'day');
+      if (!unit) return;
+      await api(`/api/admin/users/${id}/extend`, { method:'POST', body: JSON.stringify({ durationValue: Number(value), durationUnit: String(unit).toLowerCase() }) });
+      loadUsers();
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const saveMsg = document.getElementById('saveMsg');
+      const saveErr = document.getElementById('saveErr');
+      saveMsg.textContent = '';
+      saveErr.textContent = '';
+      try {
+        await api('/api/admin/users', {
+          method:'POST',
+          body: JSON.stringify({
+            userId: document.getElementById('userId').value,
+            password: document.getElementById('password').value,
+            maxDevices: Number(document.getElementById('maxDevices').value),
+            durationValue: Number(document.getElementById('durationValue').value),
+            durationUnit: document.getElementById('durationUnit').value,
+            notes: document.getElementById('notes').value.trim()
+          })
+        });
+        document.getElementById('password').value = '';
+        saveMsg.textContent = 'User access saved.';
+        await loadUsers();
+      } catch (err) {
+        saveErr.textContent = err.message || 'Could not save user.';
+      }
+    });
+
+    document.getElementById('search').addEventListener('input', renderUsers);
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await api('/api/admin/logout', { method:'POST' });
+      location.reload();
+    });
+
+    (async () => {
+      try {
+        await api('/api/admin/session');
+        loadUsers();
+      } catch {
+        location.reload();
+      }
+    })();
+  </script>
+</body>
+</html>
