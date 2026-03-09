@@ -1,20 +1,20 @@
 {
-  "name": "Cash App",
-  "short_name": "Cash",
-  "start_url": "index.html",
+  "name": "CashApp",
+  "short_name": "CashApp",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#47b349",
   "theme_color": "#47b349",
   "icons": [
     {
-      "src": "icons/pfpwhite.png",
+      "src": "/icons/cshlogo.png",
       "sizes": "192x192",
-      "type": "cshlogo/png"
+      "type": "image/png"
     },
     {
-      "src": "icons/pfpwhite.png",
+      "src": "/icons/cshlogo.png",
       "sizes": "512x512",
-      "type": "cshlogo/png"
+      "type": "image/png"
     }
   ]
 }
